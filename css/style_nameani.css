@@ -1,0 +1,862 @@
+@charset "utf-8";
+
+:root {
+    --bg: #0c1324;
+    /* 딥네이비 (신뢰/차분) */
+    --ink: #e9ecf2;
+    /* 거의 흰색 텍스트 */
+    --sub: #b0b9d6;
+    /* 보조 텍스트 */
+    --brand: #d4b26a;
+    /* 포인트(골드) */
+    --card: #111a33;
+    /* 카드 배경 */
+    --muted: #0a1120;
+    /* 섹션 경계 */
+    --maxw: 1200px;
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    /* 10 10은 커서 이미지의 '클릭 지점(hotspot)'. (씨앗의 뾰족한 끝 부분으로 조절) */
+    cursor: url('../images/seed_small.png') 10 10, auto;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif
+}
+
+
+
+
+/* 2. 뿌려질 작은 씨앗의 스타일 */
+.seed {
+    position: absolute;
+    /* 마우스 좌표에 따라 절대 위치에 배치 */
+    width: 20px;
+    height: 20px;
+
+    /* --- 옵션 1: 이미지 사용 시 --- */
+    background-image: url('../images/seed_small.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    /* --- 옵션 2: 이미지가 없을 때 (갈색 점으로 대체) --- */
+    /* background-color: #8B4513; 
+    border-radius: 50%;
+    */
+    /* --- (옵션 2 사용 시 위 3줄의 주석을 풀고, 위 3줄(이미지)을 주석 처리해) --- */
+
+
+    /* 3. 씨앗이 마우스 클릭을 방해하지 않도록 */
+    pointer-events: none;
+
+    /* 4. 애니메이션 적용 */
+    /* 'sprinkle' 애니메이션을 1초 동안(1s) 실행하고, 
+       마지막 상태를 유지(forwards)하며, 
+       자연스럽게(ease-out) */
+    animation: sprinkle 1s ease-out forwards;
+}
+
+
+/* 3. 씨앗이 흩날리는 애니메이션 정의 */
+@keyframes sprinkle {
+    0% {
+        /* 시작: 원래 크기, 투명도 100% */
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        /* 끝: 
+           X축(좌우)으로 랜덤하게 흩어지고 (JS에서 --random-x 변수 제공)
+           Y축(아래)으로 50px 떨어지며
+           사라짐 (scale(0), opacity: 0)
+        */
+        transform: translate(calc(var(--random-x) * 40px), 50px) scale(0);
+        opacity: 0;
+    }
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none
+}
+
+img {
+    max-width: 100%;
+    display: block
+}
+
+/* ===== 상단 헤더 ===== */
+header {
+    position: sticky;
+    /* **주목** */
+    /* height: 40px; */
+    top: 0;
+    z-index: 50;
+    backdrop-filter: saturate(140%) blur(8px);
+    /* background: rgba(12, 19, 36, .6); */
+    border-bottom: 1px solid rgba(204, 197, 197, 0.1);
+    padding: 10px 5px;
+}
+
+.row1_1 {
+    border: 3px solid red;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 14px 20px;
+    gap: 18px;
+
+}
+
+.bandAndName {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    /* ▼ 쉼표(,)로 2개의 배경(줄)을 정의합니다 ▼ */
+    background-image:
+        linear-gradient(to right, #e83e8c, #d4b26a),
+        /* 1. 윗줄 */
+        linear-gradient(to right, #e83e8c, #d4b26a);
+    /* 2. 아랫줄 */
+
+    background-repeat: no-repeat;
+    /* 1개만 써도 둘 다 적용됩니다 */
+
+    /* ▼ 윗줄은 100% 2px, 아랫줄도 100% 2px ▼ */
+    background-size: 100% 2px, 100% 2px;
+
+    /* ▼ 1번(윗줄)은 top, 2번(아랫줄)은 bottom에 배치 ▼ */
+    background-position: left top, left bottom;
+
+    /* ▼ 윗줄 공간 확보를 위해 padding-top 추가 ▼ */
+    padding-top: 4px;
+    padding-bottom: 8px;
+    /* 기존과 동일하게 8px 유지 */
+}
+
+
+
+.brand span {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+#myName {
+    display: none;
+    width: 60px;
+}
+
+
+
+
+.dot {
+    display: inline-block;
+    align-items: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 .6rem var(--brand)
+}
+
+.name {
+    /* text-decoration: overline; */
+    /* text-decoration-color: var(--brand); */
+    /* 윗줄 색상 */
+    /* text-decoration-thickness: 2px; */
+    /* 윗줄 굵기 */
+    font-weight: bold;
+    margin: 0;
+}
+
+.line {
+    width: 2px;
+    height: 16px;
+    background-color: var(--brand);
+    margin: 0;
+    padding: 0;
+}
+
+.occupation {
+    display: inline-block;
+    /* text-decoration: underline; */
+    /* text-decoration-color: var(--brand); */
+    /* 윗줄 색상 */
+    /* text-decoration-thickness: 2px; */
+    /* 윗줄 굵기 */
+    font-weight: bold;
+
+
+}
+
+.brand span {
+    font-size: 18px;
+    margin: 0;
+    /* border-top: 2px solid var(--brand); */
+    font-weight: 700;
+    letter-spacing: .4px
+}
+
+.menu {
+    display: flex;
+    gap: 18px;
+}
+
+.menu a {
+    font-size: 16px;
+    opacity: .9;
+    white-space: nowrap;
+
+}
+
+/* 모바일때문에 새로 수정할때 추가 */
+/* ===== 메뉴 아이콘/텍스트 기본 설정 ===== */
+.menu a i {
+    display: none;
+    /* 아이콘은 기본(데스크톱)에서 숨김 */
+}
+
+.menu a .menu-text {
+    display: inline;
+    /* 텍스트는 기본(데스크톱)에서 보임 */
+}
+
+/* ******중요한 표현임********** */
+.menu a.active {
+    color: var(--brand)
+}
+
+/* ===== 공통 레이아웃 ===== */
+/* 1. display: grid;
+의미: 이 속성이 적용된 요소(부모)를 **'Grid 컨테이너'**로 만듭니다.
+역할: 부모 요소가 그 안의 자식 요소(들)의 위치와 정렬을 마음대로 제어할 수 있는 '그리드 시스템'의 권한을 갖게 됩니다.
+
+2. place-items: center;
+의미: "모든 자식 요소(아이템)들을 각자 배정된 그리드 칸(cell) 안에서 중앙에 배치하라"는 뜻입니다.
+역할: 이것은 두 가지 속성을 한 번에 합친 단축 속성입니다.
+align-items: center; (수직 중앙 정렬)
+justify-items: center; (수평 중앙 정렬) */
+
+.toTop i {
+    display: block;
+    text-align: center;
+
+}
+
+.toTop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+section {
+    min-height: calc(100vh - 64px);
+    display: grid;
+    place-items: center;
+    padding: 80px 20px;
+    border-bottom: 1px solid var(--muted)
+}
+
+.inner {
+    max-width: var(--maxw);
+    width: 100%
+}
+
+.kicker {
+    color: var(--brand);
+    text-transform: uppercase;
+    /* 대문자 변경 */
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .16em;
+    margin-bottom: 8px
+}
+
+.h1 {
+    font-size: 56px;
+    line-height: 1.1;
+    margin: 0 0 12px
+}
+
+.h2 {
+    font-size: 34px;
+    line-height: 1.2;
+    margin: 0 0 8px
+}
+
+.lead {
+    color: var(--sub);
+    font-size: 18px;
+    line-height: 1.7
+}
+
+/* .tags {
+    margin-bottom: 18px;
+} */
+/* 이 표현보다 .btns 에 margin-top을 주는 것이 좋은 것은 
+브라우저 폭이 좁아졌을 때 tags 요소가 흘러내려서 2줄 될때  tags 요소들 간의 margin-bottom이 커짐 */
+.btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 26px
+}
+
+.btn {
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    font-weight: 600;
+    transition: all .2s ease
+}
+
+.btn.primary {
+    background: var(--brand);
+    color: #0a0e18;
+    border-color: transparent
+}
+
+.btns .secondary {
+    /* A. transform의 시작점(기본값)을 명시해줍니다. */
+    transform: translateY(0);
+
+    /* B. transition 속성을 설정합니다. */
+    /* 속성명       지속시간  타이밍함수  딜레이 */
+    transition: background 0.3s ease 0s,
+        color 0.3s ease 0s,
+        border-color 0.3s ease 0s,
+        transform 0.3s ease 0.3s;
+    /* <- transform에만 0.5초 딜레이 적용 */
+
+    /* 참고: 모든 속성을 한 번에 설정할 수도 있습니다. */
+    /* transition: all 0.3s ease; */
+    /* transition-delay: 0.5s;  <-- 하지만 이러면 모든 속성이 0.5초 지연됩니다. */
+}
+
+/* ........................................... */
+.btn:hover {
+    transform: translateY(-2px)
+}
+
+.btns:has(.secondary:hover) .secondary {
+    background: var(--brand);
+    color: #0a0e18;
+    border-color: transparent;
+    transform: translateY(-2px)
+}
+
+.btns:has(.secondary:hover) .primary {
+    background: none;
+    color: white;
+}
+
+/* hover 될 때 a 태그의 배경에 변화를 줌(왔다 갔다 */
+
+/* ===== Hero ===== */
+.hero {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 40px;
+    align-items: center
+}
+
+.hero .photo {
+    border-radius: 20px;
+    overflow: hidden;
+    opacity: 0.7;
+    /* 방사형 그라데이션 마스크를 적용합니다.
+      중앙(70%)까지는 검은색(불투명, 이미지가 보임)
+      가장자리(100%)는 투명(이미지가 사라짐)
+      70% ~ 100% 구간이 자연스럽게 흐려집니다.
+    */
+    mask-image: radial-gradient(circle, black 70%, transparent 100%);
+
+    /* Safari 등 웹킷 브라우저 호환성을 위해 추가 */
+    -webkit-mask-image: radial-gradient(circle, black 70%, transparent 100%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+    border: 1px solid rgba(255, 255, 255, .08)
+}
+
+.hero .tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.tag {
+    font-size: 12px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    padding: 8px 10px;
+    border-radius: 999px;
+    color: var(--sub)
+}
+
+/* width: 100px; height: 100px;인 정사각형에서는 두 속성 모두 완벽한 원을 만듭니다.
+border-radius: 50%;
+너비(100px)의 50% = 50px
+높이(100px)의 50% = 50px
+결과: 반지름 50px인 원이 됩니다.
+
+border-radius: 999px;
+브라우저는 반지름을 999px로 만들려고 합니다.
+하지만 CSS 규칙상 반지름은 요소의 절반 크기(50px)를 넘을 수 없습니다.
+따라서 브라우저가 999px를 최대치인 50px로 **자동 제한(clamp)**합니다.
+결과: 반지름 50px인 원이 됩니다. */
+
+/* ===== Skills ===== */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 24px
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 18px;
+    padding: 20px
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    font-size: 18px
+}
+
+.list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--sub);
+    line-height: 1.8
+}
+
+/* ===== Projects ===== */
+.projects {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 26px
+}
+
+.article1 {
+    transition: backround 0.3s ease 0s,
+        border-color 0.3s ease 0s,
+        transform 0.3s ease 0s;
+}
+
+.article2 {
+    transition: backround 0.3s ease 0s,
+        border-color 0.3s ease 0s,
+        transform 0.3s ease 0s;
+}
+
+.article3 {
+    transition: backround 0.3s ease 0s,
+        border-color 0.3s ease 0s,
+        transform 0.3s ease 0s;
+}
+
+.p {
+    background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 20px;
+    overflow: hidden
+}
+
+.p img {
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    opacity: 0.7;
+
+}
+
+.p .body {
+    padding: 16px
+}
+
+.meta {
+    font-size: 12px;
+    color: var(--sub);
+    margin-top: 6px
+}
+
+
+/* hover.................. */
+
+.article1:hover {
+    background: var(--card);
+    box-shadow: 0px 0px 10px rgb(235, 232, 232, 0.8);
+    /* color: #0a0e18; */
+    border-color: transparent;
+    transform: translateY(-2px)
+}
+
+.article2:hover {
+    background: var(--card);
+    box-shadow: 0px 0px 10px rgb(235, 232, 232, 0.8);
+    /* color: #0a0e18; */
+    border-color: transparent;
+    transform: translateY(-2px)
+}
+
+.article3:hover {
+    background: var(--card);
+    box-shadow: 0px 0px 10px rgb(235, 232, 232, 0.8);
+    /* color: #0a0e18; */
+    border-color: transparent;
+    transform: translateY(-2px)
+}
+
+/* ===== Background ===== */
+#background .inner i {
+    color: rgba(238, 240, 217, 0.9);
+    text-shadow: 0 0 8px rgba(238, 240, 217, 0.8),
+        /* 같은 색상의 부드러운 그림자 */
+        0 0 15px rgba(238, 240, 217, 0.7);
+    /* 흰색으로 더 밝은 광채 효과 추가 */
+    animation: swing 2s infinite ease-in-out;
+    display: inline-block;
+    transform-origin: 50% 0;
+    margin: 0 3px;
+    /* 50% (수평 중앙), 0 (수직 상단) */
+}
+
+#background .inner .h2 {
+    animation: swing-left 2s infinite ease-in-out;
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(45deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(-45deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+
+@keyframes swing-left {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+
+.timeline {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px
+}
+
+.tl {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    align-items: start
+}
+
+.tl .when {
+    color: var(--brand);
+    font-weight: 700
+}
+
+.tl .what {
+    color: var(--sub)
+}
+
+/* ===== Contact ===== */
+.contact {
+    display: grid;
+    grid-template-columns: 1fr .9fr;
+    gap: 24px;
+    align-items: center
+}
+
+.contact .cta {
+    background: var(--card);
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .06)
+}
+
+form {
+    display: grid;
+    gap: 12px
+}
+
+input,
+textarea {
+    background: #0b1328;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--ink);
+    font: inherit
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical
+}
+
+.credit {
+    color: var(--sub);
+    font-size: 12px;
+    margin-top: 18px
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 980px) {
+
+    .hero,
+    .contact {
+        grid-template-columns: 1fr
+    }
+
+    .projects {
+        grid-template-columns: 1fr
+    }
+
+    .grid-3 {
+        grid-template-columns: 1fr
+    }
+
+    .h1 {
+        font-size: 40px
+    }
+
+    .h2 {
+        font-size: 26px
+    }
+}
+
+
+/* * ===== 740px 이하 모바일 메뉴 ===== */
+@media (max-width: 740px) {
+
+    /* 1. 헤더 브랜드 영역 단순화 */
+    .brand .occupation,
+    .brand .line,
+    .bandAndName .dot,
+    .brand .name {
+        display: none;
+        /* 직업명, 세로줄, 양쪽 점 숨기기 */
+    }
+
+    .brand {
+        padding: 4.5px 2.5px 0.5px 2.5px;
+        /* kimhw 아래 위 여백이 맞지 않아서 보정 */
+        background-image: none;
+        /* 이름 밑줄 제거 */
+        border: 1px solid white;
+    }
+
+    #myName {
+        display: block;
+        width: 100px;
+
+    }
+
+    .cls-1 {
+        fill: white;
+        /* stroke-width: 30; */
+        /* stroke-width 가 먹질 않음 이유는 글자를 윤곽선 처리해서
+        가져와서 글자를 면으로 인식해서 width 속성이 안 먹음 */
+        stroke-dasharray: 1;
+        stroke-dashoffset: 0;
+        /* animation: lineani 1s forwards; */
+    }
+
+
+    .brand:hover .cls-1:nth-of-type(1) {
+        /* 1번째 path: 0초에 시작, 1초에 채우기 시작 */
+        animation:
+            fillani 0.4s ease-in-out forwards;
+    }
+
+    .brand:hover .cls-1:nth-of-type(2) {
+        animation:
+            fillani 0.4s ease-in-out forwards 0.4s;
+    }
+
+    .brand:hover .cls-1:nth-of-type(3) {
+
+        animation:
+            fillani 0.4s ease-in-out forwards 0.8s;
+    }
+
+    .brand:hover .cls-1:nth-of-type(4) {
+
+        animation:
+            fillani 0.4s ease-in-out forwards 1.2s;
+    }
+
+    .brand:hover .cls-1:nth-of-type(5) {
+
+        animation:
+            fillani 0.4s ease-in-out forwards 1.6s;
+    }
+
+    .brand:hover {
+        animation: borderline 1s ease-in-out forwards;
+    }
+
+    @keyframes fillani {
+
+        /* fill을 none에서 aqua로 -> 색이 채워짐 */
+        to {
+            fill: aqua;
+        }
+    }
+
+    @keyframes borderline {
+        to {
+            border: 1px solid aqua;
+        }
+    }
+
+    .nav {
+        padding: 10px 15px;
+        /* 헤더 좌우 여백 줄이기 */
+    }
+
+    /* 2. 메뉴 레이아웃 변경 (아이콘 5개) */
+    .menu {
+        justify-content: space-around;
+        /* 5개 아이콘 균등 분배 */
+        width: 100%;
+        /* 네비 영역 꽉 채우기 */
+        gap: 5px;
+        /* 아이콘 최소 간격 */
+    }
+
+    .menu a {
+        position: relative;
+        /* 툴팁을 위한 기준점(position) 설정 */
+        padding: 5px 10px;
+        /* 아이콘 클릭 영역 확보 */
+    }
+
+    /* 3. 아이콘 보이기 */
+    .menu a i {
+        display: inline-block;
+        /* 숨겼던 아이콘 보이기 */
+        font-size: 20px;
+        /* 아이콘 크기 */
+        transition: transform 0.2s ease;
+    }
+
+    .menu a:hover i {
+        transform: scale(1.1);
+        /* 아이콘에 호버 시 살짝 커지는 효과 */
+    }
+
+    /* 4. 텍스트를 툴팁으로 변경 */
+    .menu a .menu-text {
+        /* 텍스트 숨기기 (툴팁 준비) */
+        display: block;
+        /* span을 블록 요소로 변경 */
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+
+        /* 툴팁 위치 */
+        position: absolute;
+        top: 100%;
+        /* 아이콘 바로 아래 */
+        margin-top: 10px;
+        /* 아이콘과 툴팁 사이 간격 */
+        left: 50%;
+        transform: translateX(-50%);
+        /* 툴팁 중앙 정렬 */
+
+        /* 툴팁 스타일 */
+        background: var(--brand);
+        /* 브랜드 색상 배경 */
+        color: var(--bg);
+        /* 어두운 글씨색 */
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        /* 툴팁 텍스트 줄바꿈 방지 */
+        z-index: 10;
+    }
+
+    /* 5. 툴팁 말풍선 꼬리 만들기 */
+    .menu a .menu-text::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        /* 툴팁 상단에 위치 */
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        /* 5px 크기 삼각형 */
+        border-style: solid;
+        border-color: transparent transparent var(--brand) transparent;
+        /* 아래쪽만 색상 */
+    }
+
+    /* 6. 아이콘 호버 시 툴팁(텍스트) 보여주기 */
+    .menu a:hover .menu-text {
+        visibility: visible;
+        opacity: 1;
+    }
+}

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>묵상 노트 생성기</title>
+    <style>
+        /* 생성기 페이지 자체를 위한 간단한 스타일 */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            padding: 20px 30px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        h1 {
+            color: #0056b3;
+        }
+        h2 {
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+        /* 폼 스타일 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* padding이 너비에 포함되도록 설정 */
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            line-height: 1.6;
+        }
+        /* 버튼 스타일 */
+        #generateButton {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #generateButton:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- [새로 추가된 스타일] --- */
+        /* 출력 섹션 레이아웃 */
+        .output-header {
+            display: flex;
+            justify-content: space-between; /* 제목과 버튼을 양쪽 끝으로 */
+            align-items: center; /* 세로 중앙 정렬 */
+            margin-top: 40px;
+        }
+        /* 복사 버튼 스타일 */
+        #copyButton {
+            background-color: #28a745; /* 초록색 */
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #copyButton:hover {
+            background-color: #218838;
+        }
+        /* --- [스타일 추가 끝] --- */
+
+        /* 결과 출력창 스타일 */
+        #outputHtml {
+            width: 100%;
+            min-height: 300px;
+            /* margin-top: 20px; -> .output-header가 대신 간격 조절 */
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            box-sizing: border-box;
+            background-color: #fff;
+            white-space: pre; /* 공백 및 줄바꿈 유지 */
+            overflow-x: auto; /* 가로 스크롤 */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>묵상 노트 생성기 📝</h1>
+    <p>아래 폼을 채우고 버튼을 누르면, 묵상 노트 HTML 코드가 생성됩니다.</p>
+
+    <form id="meditationForm">
+        <h2>1. 기본 정보</h2>
+        <div class="form-group">
+            <label for="mainTitle">제목 (예: 열왕기상 14장 묵상)</label>
+            <input type="text" id="mainTitle" value="열왕기상 14장 묵상">
+        </div>
+
+        <h2>2. 관찰 (Observation)</h2>
+        <div class="form-group">
+            <label for="obsPeople">주요 인물</label>
+            <input type="text" id="obsPeople" value="여로보암, 그의 아내, 선지자 아히야, 유다의 르호보암">
+        </div>
+        <div class="form-group">
+            <label for="obsEvents">주요 사건</label>
+            <textarea id="obsEvents">여로보암이 금송아지를 만들고 예배를 왜곡함. 아들이 병들자 아내를 선지자에게 보내 하나님의 뜻을 물음.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="obsGod">하나님은 어떤 분이신가</label>
+            <textarea id="obsGod">하나님의 은혜로 왕위에 올린 자의 불순종을 아시고 엄중히 심판하시는 분. 죄를 결코 가볍게 여기지 않으시는 분. 말씀보다 계산을 앞세운 선택은 결국 무너진다는 것을 보여주시는 분. 순종으로 리더의 자격을 판단하시는 분. 예루살렘 성전 곁에 있어도 말씀에 순종하지 않으면 보호를 누릴 수 없게 하시는 분.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="obsPrinciple">말씀 속에서 발견한 원리</label>
+            <textarea id="obsPrinciple">한 사람의 결정이 자신의 삶뿐 아니라 공동체에도 영향을 미친다. 자리를 지키기 위해 하나님의 뜻을 왜곡해서는 안 된다. 겉으로만 경건함을 지키는 것이 아니라, 하나님 영광 앞에 마음을 쏟는 진실한 예배자가 되어야 한다.</textarea>
+        </div>
+
+        <h2>3. 해석 (Interpretation)</h2>
+        <div class="form-group">
+            <label for="intMessage">본문이 말하는 핵심 메시지</label>
+            <textarea id="intMessage">여로보암의 불순종은 개인의 문제를 넘어 공동체에 심각한 결과를 초래하는 죄였다. 겉으로는 하나님 말씀을 따르는 것처럼 보이지만, 마음 깊은 곳에 숨겨진 불순종을 점검하고 진실한 순종으로 삶을 변화시켜야 한다.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="intContext">당시 시대적 배경</label>
+            <textarea id="intContext">북 이스라엘과 유다 모두 하나님 앞에서 악을 행하던 시기.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="intLesson">내게 주시는 교훈</label>
+            <textarea id="intLesson">나의 작은 불순종이 주변 사람들과 공동체에 영향을 줄 수 있음을 깨닫고, 하나님 앞에 진심으로 회개하며 말씀에 순종하는 삶을 살아야 한다. 강한 힘이 아닌 주님을 향한 온전한 순종으로 이웃과 공동체를 섬겨야 한다.</textarea>
+        </div>
+
+        <h2>4. 적용 (Application)</h2>
+        <div class="form-group">
+            <label for="appListApply">구체적으로 삶에 적용할 내용</label>
+            <textarea id="appListApply">내 마음 깊은 곳에 숨겨진 불순종을 돌아보고, 겉치레가 아닌 진실한 순종으로 삶을 변화시키기 위해 노력한다.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="appListAction">이번 주 실천 사항</label>
+            <textarea id="appListAction">공동체에 긍정적인 영향을 줄 수 있도록 나의 언행을 돌아보고, 하나님의 뜻에 순종하는 결정을 내리도록 힘쓴다.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="appListPrayer">기도 제목</label>
+            <textarea id="appListPrayer">하나님, 저의 불순종을 용서하시고, 온전한 순종으로 주님과 이웃을 섬기는 자가 되게 하소서. 진실한 예배자로 살게 하소서.</textarea>
+        </div>
+
+        <h2>5. 결단 (Decision)</h2>
+        <div class="form-group">
+            <label for="decDecision">오늘 하루 새롭게 결단할 점</label>
+            <textarea id="decDecision">하나님 말씀에 대한 진실한 순종을 통해 공동체에 선한 영향력을 끼치는 삶을 살기로 결단한다.</textarea>
+        </div>
+        
+        <h2>6. 마침</h2>
+        <div class="form-group">
+            <label for="recordDate">기록일 (예: 2025/10/24)</label>
+            <input type="text" id="recordDate" value="2025/10/24">
+        </div>
+
+        <button type="button" id="generateButton">🎉 HTML 생성하기</button>
+    </form>
+
+    <div class="output-header">
+        <h2>생성된 HTML 코드</h2>
+        <button type="button" id="copyButton">📋 클립보드에 복사</button>
+    </div>
+    <p>아래 텍스트 상자의 전체 코드를 복사하여 `.html` 파일로 저장하세요.</p>
+    <textarea id="outputHtml" readonly rows="20"></textarea>
+
+    <script type="text/template" id="html-template">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{MAIN_TITLE}}</title>
+    
+    <style>
+        /* body 태그에 원하는 여백(padding)을 설정합니다. */
+        body {
+            /* 이 padding 값을 조절해서 좌우 여백을 맞추세요! */
+            padding: 20px 25px; 
+            font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, BlinkMacSystemFont, 
+                         'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 
+                         'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.7; /* 줄 간격 */
+            word-break: keep-all; /* 한글 단어 잘림 방지 */
+            color: #333;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            color: #222;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            color: #0056b3; /* 포인트 컬러 */
+            border-left: 5px solid #007bff;
+            padding-left: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* 묵상 내용 목록 */
+        ul {
+            list-style-type: none; /* 기본 점 제거 */
+            padding-left: 5px;
+        }
+
+        li {
+            margin-bottom: 15px; /* 항목 간 간격 */
+        }
+
+        /* '주요 인물:', '주요 사건:' 등 소제목 스타일 */
+        li strong {
+            color: #555;
+            margin-right: 5px;
+            font-size: 1.05em;
+            display: block; /* 소제목을 별도 줄로 표시 */
+            margin-bottom: 5px;
+        }
+        
+        /* 기록일 스타일 */
+        .date-record {
+            text-align: right;
+            margin-top: 40px;
+            font-style: italic;
+            color: #888;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{MAIN_TITLE}}</h1>
+
+    <h2>2. 관찰 (Observation)</h2>
+    <ul>
+        <li>
+            <strong>주요 인물:</strong>
+            {{OBS_PEOPLE}}
+        </li>
+        <li>
+            <strong>주요 사건:</strong>
+            {{OBS_EVENTS}}
+        </li>
+        <li>
+            <strong>하나님은 어떤 분이신가:</strong>
+            {{OBS_GOD}}
+        </li>
+        <li>
+            <strong>말씀 속에서 발견한 원리:</strong>
+            {{OBS_PRINCIPLE}}
+        </li>
+    </ul>
+
+    <h2>3. 해석 (Interpretation)</h2>
+    <ul>
+        <li>
+            <strong>본문이 말하는 핵심 메시지:</strong>
+            {{INT_MESSAGE}}
+        </li>
+        <li>
+            <strong>당시 시대적 배경:</strong>
+            {{INT_CONTEXT}}
+        </li>
+        <li>
+            <strong>내게 주시는 교훈:</strong>
+            {{INT_LESSON}}
+        </li>
+    </ul>
+
+    <h2>4. 적용 (Application)</h2>
+    <ul>
+        <li>
+            <strong>구체적으로 삶에 적용할 내용:</strong>
+            {{APP_APPLY}}
+        </li>
+        <li>
+            <strong>이번 주 실천 사항:</strong>
+            {{APP_ACTION}}
+        </li>
+        <li>
+            <strong>기도 제목:</strong>
+            {{APP_PRAYER}}
+        </li>
+    </ul>
+
+    <h2>5. 결단 (Decision)</h2>
+    <ul>
+        <li>
+            <strong>오늘 하루 새롭게 결단할 점:</strong>
+            {{DEC_DECISION}}
+        </li>
+    </ul>
+
+    <p class="date-record">{{RECORD_DATE}}</p>
+
+</body>
+</html>
+</script>
+
+    <script>
+        /**
+         * 텍스트를 HTML에 안전하게 표시하기 위해 특수 문자를 변환합니다.
+         */
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#039;');
+        }
+
+        /**
+         * 텍스트의 줄바꿈 문자(\n)를 HTML의 <br> 태그로 변환합니다.
+         */
+        function nl2br(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/\r\n|\r|\n/g, '<br>');
+        }
+
+        // 'HTML 생성하기' 버튼 클릭 이벤트
+        document.getElementById('generateButton').addEventListener('click', function() {
+            
+            // 1. 템플릿 '틀' 가져오기
+            let template = document.getElementById('html-template').innerHTML;
+
+            // 2. 폼에서 모든 값 가져오기
+            const mainTitle = document.getElementById('mainTitle').value;
+            const obsPeople = document.getElementById('obsPeople').value;
+            const obsEvents = document.getElementById('obsEvents').value;
+            const obsGod = document.getElementById('obsGod').value;
+            const obsPrinciple = document.getElementById('obsPrinciple').value;
+            const intMessage = document.getElementById('intMessage').value;
+            const intContext = document.getElementById('intContext').value;
+            const intLesson = document.getElementById('intLesson').value;
+            const appListApply = document.getElementById('appListApply').value;
+            const appListAction = document.getElementById('appListAction').value;
+            const appListPrayer = document.getElementById('appListPrayer').value;
+            const decDecision = document.getElementById('decDecision').value;
+            const recordDate = document.getElementById('recordDate').value;
+
+            // 3. 템플릿의 '자리표시자'를 실제 값으로 교체
+            let generatedHtml = template;
+            
+            // 제목 (줄바꿈 불필요)
+            generatedHtml = generatedHtml.replace(/{{MAIN_TITLE}}/g, escapeHTML(mainTitle));
+            // 관찰
+            generatedHtml = generatedHtml.replace(/{{OBS_PEOPLE}}/g, nl2br(escapeHTML(obsPeople)));
+            generatedHtml = generatedHtml.replace(/{{OBS_EVENTS}}/g, nl2br(escapeHTML(obsEvents)));
+            generatedHtml = generatedHtml.replace(/{{OBS_GOD}}/g, nl2br(escapeHTML(obsGod)));
+            generatedHtml = generatedHtml.replace(/{{OBS_PRINCIPLE}}/g, nl2br(escapeHTML(obsPrinciple)));
+            // 해석
+            generatedHtml = generatedHtml.replace(/{{INT_MESSAGE}}/g, nl2br(escapeHTML(intMessage)));
+            generatedHtml = generatedHtml.replace(/{{INT_CONTEXT}}/g, nl2br(escapeHTML(intContext)));
+            generatedHtml = generatedHtml.replace(/{{INT_LESSON}}/g, nl2br(escapeHTML(intLesson)));
+            // 적용
+            generatedHtml = generatedHtml.replace(/{{APP_APPLY}}/g, nl2br(escapeHTML(appListApply)));
+            generatedHtml = generatedHtml.replace(/{{APP_ACTION}}/g, nl2br(escapeHTML(appListAction)));
+            generatedHtml = generatedHtml.replace(/{{APP_PRAYER}}/g, nl2br(escapeHTML(appListPrayer)));
+            // 결단
+            generatedHtml = generatedHtml.replace(/{{DEC_DECISION}}/g, nl2br(escapeHTML(decDecision)));
+            // 기록일 (줄바꿈 불필요)
+            generatedHtml = generatedHtml.replace(/{{RECORD_DATE}}/g, escapeHTML(recordDate));
+
+            // 4. 생성된 HTML 코드를 아래쪽 textarea에 표시
+            document.getElementById('outputHtml').value = generatedHtml;
+        });
+
+        // --- [새로 추가된 JavaScript 로직] ---
+        // '클립보드에 복사' 버튼 클릭 이벤트
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const outputTextarea = document.getElementById('outputHtml');
+            const textToCopy = outputTextarea.value;
+
+            // 내용이 비어있으면 복사 시도 안 함
+            if (!textToCopy) {
+                alert('복사할 내용이 없습니다. 먼저 HTML을 생성해주세요.');
+                return;
+            }
+
+            // 최신 브라우저의 Clipboard API 사용
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    // 성공 시: 버튼 텍스트를 잠시 변경
+                    const originalText = this.innerText;
+                    this.innerText = '✅ 복사 완료!';
+                    this.style.backgroundColor = '#218838'; // 더 진한 초록색
+
+                    // 2초 후에 원래 텍스트로 복구
+                    setTimeout(() => {
+                        this.innerText = originalText;
+                        this.style.backgroundColor = '#28a745'; // 원래 초록색
+                    }, 2000);
+                })
+                .catch(err => {
+                    // 실패 시: 사용자에게 알림
+                    console.error('클립보드 복사 실패:', err);
+                    alert('클립보드 복사에 실패했습니다. 브라우저 설정을 확인해주세요.');
+                });
+        });
+        // --- [JavaScript 추가 끝] ---
+    </script>
+
+</body>
+</html>
